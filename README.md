@@ -18,6 +18,6 @@ The Torch source code with either locally or convolutional LSTM will be availabl
 
 If you found this work useful, please cite the following paper:
 
-...
+```
 Fayyaz M, Saffar MH, Sabokrou M, Fathy M, Klette R, Huang F. STFCN: Spatio-Temporal FCN for Semantic Video Segmentation. arXiv preprint arXiv:1608.05971. 2016 Aug 21.
-...
+```
