@@ -1,0 +1,59 @@
+name: "LSTM"
+input: "data"
+input_dim: 1
+input_dim: 256
+input_dim: 21
+input_dim: 1
+
+input: "clip"
+input_dim: 1
+input_dim: 1
+input_dim: 1
+input_dim: 1
+
+
+layer {
+  name: "lstm1"
+  type: "Lstm"
+  bottom: "data"
+  bottom: "clip"
+  
+  top: "lstm1"
+
+  lstm_param {
+    num_output: 3000
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "ip1"
+  type: "InnerProduct"
+  bottom: "lstm1"
+  top: "ip1"
+
+  inner_product_param {
+    num_output: 5
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer 
+{
+  name: "prob"
+  type: "Softmax"
+  bottom: "ip1"
+  top: "prob"
+}
+

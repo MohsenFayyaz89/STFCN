@@ -1,0 +1,2668 @@
+name: "FCN_Alex_LSTM"
+layer {
+  name: "data"
+  type: "HDF5Data"
+  top: "data"
+  top: "label"
+  top: "clip"
+  include
+  {
+     phase: TRAIN
+  }
+  hdf5_data_param {
+    source: "data/train.txt"
+    batch_size: 3
+  }
+}
+layer {
+  name: "data"
+  type: "HDF5Data"
+  top: "data"
+  top: "label"
+  top: "clip"
+  include
+  {
+     phase: TEST
+  }
+  hdf5_data_param {
+    source: "data/test.txt"
+    batch_size: 3
+  }
+}
+
+
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    kernel_size: 11
+    stride: 4
+    pad: 0
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "conv1"
+}
+layer {
+  name: "pool1"
+  type: "Pooling"
+  bottom: "conv1"
+  top: "pool1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "norm1"
+  type: "LRN"
+  bottom: "pool1"
+  top: "norm1"
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layer {
+  name: "conv2"
+  type: "Convolution"
+  bottom: "norm1"
+  top: "conv2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 2
+    kernel_size: 5
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layer {
+  name: "relu2"
+  type: "ReLU"
+  bottom: "conv2"
+  top: "conv2"
+}
+layer {
+  name: "pool2"
+  type: "Pooling"
+  bottom: "conv2"
+  top: "pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "norm2"
+  type: "LRN"
+  bottom: "pool2"
+  top: "norm2"
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layer {
+  name: "conv3"
+  type: "Convolution"
+  bottom: "norm2"
+  top: "conv3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu3"
+  type: "ReLU"
+  bottom: "conv3"
+  top: "conv3"
+}
+layer {
+  name: "conv4"
+  type: "Convolution"
+  bottom: "conv3"
+  top: "conv4"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layer {
+  name: "relu4"
+  type: "ReLU"
+  bottom: "conv4"
+  top: "conv4"
+}
+layer {
+  name: "conv5"
+  type: "Convolution"
+  bottom: "conv4"
+  top: "conv5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layer {
+  name: "relu5"
+  type: "ReLU"
+  bottom: "conv5"
+  top: "conv5"
+}
+layer {
+  name: "pool5"
+  type: "Pooling"
+  bottom: "conv5"
+  top: "pool5"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "fc6"
+  type: "Convolution"
+  bottom: "pool5"
+  top: "fc6"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 4096
+    kernel_size: 6
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layer {
+  name: "relu6"
+  type: "ReLU"
+  bottom: "fc6"
+  top: "fc6"
+}
+layer {
+  name: "drop6"
+  type: "Dropout"
+  bottom: "fc6"
+  top: "fc6"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "fc7"
+  type: "Convolution"
+  bottom: "fc6"
+  top: "fc7"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 4096
+    kernel_size: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layer {
+  name: "relu7"
+  type: "ReLU"
+  bottom: "fc7"
+  top: "fc7"
+}
+layer {
+  name: "drop7"
+  type: "Dropout"
+  bottom: "fc7"
+  top: "fc7"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+
+#Temporal Feature 
+
+layer 
+{
+  name: "plated"
+  type: "Reshape"
+  bottom: "fc7"
+  top: "platedFC7"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 49
+      dim: 1
+    }
+  }
+}
+
+layer 
+{
+  name: "vectorized"
+  type: "Slice"
+  bottom: "platedFC7"
+  top: "vec0"
+  top: "vec1"
+  top: "vec2"
+  top: "vec3"
+  top: "vec4"
+  top: "vec5"
+  top: "vec6"
+  top: "vec7"
+  top: "vec8"
+  top: "vec9"
+  top: "vec10"
+  top: "vec11"
+  top: "vec12"
+  top: "vec13"
+  top: "vec14"
+  top: "vec15"
+  top: "vec16"
+  top: "vec17"
+  top: "vec18"
+  top: "vec19"
+  top: "vec20"
+  top: "vec21"
+  top: "vec22"
+  top: "vec23"
+  top: "vec24"
+  top: "vec25"
+  top: "vec26"
+  top: "vec27"
+  top: "vec28"
+  top: "vec29"
+  top: "vec30"
+  top: "vec31"
+  top: "vec32"
+  top: "vec33"
+  top: "vec34"
+  top: "vec35"
+  top: "vec36"
+  top: "vec37"
+  top: "vec38"
+  top: "vec39"
+  top: "vec40"
+  top: "vec41"
+  top: "vec42"
+  top: "vec43"
+  top: "vec44"
+  top: "vec45"
+  top: "vec46"
+  top: "vec47"
+  top: "vec48"
+  
+
+  slice_param {
+    axis: 2
+    slice_point: 1
+    slice_point: 2
+    slice_point: 3
+    slice_point: 4
+    slice_point: 5
+    slice_point: 6
+    slice_point: 7
+    slice_point: 8
+    slice_point: 9
+    slice_point: 10
+    slice_point: 11
+    slice_point: 12
+    slice_point: 13
+    slice_point: 14
+    slice_point: 15
+    slice_point: 16
+    slice_point: 17
+    slice_point: 18
+    slice_point: 19
+    slice_point: 20
+    slice_point: 21
+    slice_point: 22
+    slice_point: 23
+    slice_point: 24
+    slice_point: 25
+    slice_point: 26
+    slice_point: 27
+    slice_point: 28
+    slice_point: 29
+    slice_point: 30
+    slice_point: 31
+    slice_point: 32
+    slice_point: 33
+    slice_point: 34
+    slice_point: 35
+    slice_point: 36
+    slice_point: 37
+    slice_point: 38
+    slice_point: 39
+    slice_point: 40
+    slice_point: 41
+    slice_point: 42
+    slice_point: 43
+    slice_point: 44
+    slice_point: 45
+    slice_point: 46
+    slice_point: 47
+    slice_point: 48
+    
+  }
+}
+
+layer {
+  name: "lstm0"
+  type: "Lstm"
+  bottom: "vec0"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm0"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape0"
+  type: "Reshape"
+  bottom: "lstm0"
+  top: "lstm0"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+
+layer {
+  name: "lstm1"
+  type: "Lstm"
+  bottom: "vec1"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm1"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape1"
+  type: "Reshape"
+  bottom: "lstm1"
+  top: "lstm1"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm2"
+  type: "Lstm"
+  bottom: "vec2"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm2"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape2"
+  type: "Reshape"
+  bottom: "lstm2"
+  top: "lstm2"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm3"
+  type: "Lstm"
+  bottom: "vec3"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm3"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape3"
+  type: "Reshape"
+  bottom: "lstm3"
+  top: "lstm3"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm4"
+  type: "Lstm"
+  bottom: "vec4"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm4"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape4"
+  type: "Reshape"
+  bottom: "lstm4"
+  top: "lstm4"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm5"
+  type: "Lstm"
+  bottom: "vec5"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm5"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape5"
+  type: "Reshape"
+  bottom: "lstm5"
+  top: "lstm5"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm6"
+  type: "Lstm"
+  bottom: "vec6"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm6"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape6"
+  type: "Reshape"
+  bottom: "lstm6"
+  top: "lstm6"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm7"
+  type: "Lstm"
+  bottom: "vec7"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm7"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape7"
+  type: "Reshape"
+  bottom: "lstm7"
+  top: "lstm7"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm8"
+  type: "Lstm"
+  bottom: "vec8"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm8"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape8"
+  type: "Reshape"
+  bottom: "lstm8"
+  top: "lstm8"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm9"
+  type: "Lstm"
+  bottom: "vec9"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm9"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape9"
+  type: "Reshape"
+  bottom: "lstm9"
+  top: "lstm9"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm10"
+  type: "Lstm"
+  bottom: "vec10"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm10"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape10"
+  type: "Reshape"
+  bottom: "lstm10"
+  top: "lstm10"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+
+layer {
+  name: "lstm11"
+  type: "Lstm"
+  bottom: "vec11"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm11"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape11"
+  type: "Reshape"
+  bottom: "lstm11"
+  top: "lstm11"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm12"
+  type: "Lstm"
+  bottom: "vec12"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm12"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape12"
+  type: "Reshape"
+  bottom: "lstm12"
+  top: "lstm12"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm13"
+  type: "Lstm"
+  bottom: "vec13"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm13"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape13"
+  type: "Reshape"
+  bottom: "lstm13"
+  top: "lstm13"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm14"
+  type: "Lstm"
+  bottom: "vec14"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm14"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape14"
+  type: "Reshape"
+  bottom: "lstm14"
+  top: "lstm14"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm15"
+  type: "Lstm"
+  bottom: "vec15"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm15"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape15"
+  type: "Reshape"
+  bottom: "lstm15"
+  top: "lstm15"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm16"
+  type: "Lstm"
+  bottom: "vec16"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm16"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape16"
+  type: "Reshape"
+  bottom: "lstm16"
+  top: "lstm16"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm17"
+  type: "Lstm"
+  bottom: "vec17"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm17"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape17"
+  type: "Reshape"
+  bottom: "lstm17"
+  top: "lstm17"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm18"
+  type: "Lstm"
+  bottom: "vec18"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm18"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape18"
+  type: "Reshape"
+  bottom: "lstm18"
+  top: "lstm18"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm19"
+  type: "Lstm"
+  bottom: "vec19"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm19"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape19"
+  type: "Reshape"
+  bottom: "lstm19"
+  top: "lstm19"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm20"
+  type: "Lstm"
+  bottom: "vec20"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm20"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape20"
+  type: "Reshape"
+  bottom: "lstm20"
+  top: "lstm20"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+
+layer {
+  name: "lstm21"
+  type: "Lstm"
+  bottom: "vec21"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm21"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape21"
+  type: "Reshape"
+  bottom: "lstm21"
+  top: "lstm21"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm22"
+  type: "Lstm"
+  bottom: "vec22"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm22"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape22"
+  type: "Reshape"
+  bottom: "lstm22"
+  top: "lstm22"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm23"
+  type: "Lstm"
+  bottom: "vec23"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm23"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape23"
+  type: "Reshape"
+  bottom: "lstm23"
+  top: "lstm23"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm24"
+  type: "Lstm"
+  bottom: "vec24"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm24"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape24"
+  type: "Reshape"
+  bottom: "lstm24"
+  top: "lstm24"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm25"
+  type: "Lstm"
+  bottom: "vec25"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm25"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape25"
+  type: "Reshape"
+  bottom: "lstm25"
+  top: "lstm25"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm26"
+  type: "Lstm"
+  bottom: "vec26"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm26"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape26"
+  type: "Reshape"
+  bottom: "lstm26"
+  top: "lstm26"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm27"
+  type: "Lstm"
+  bottom: "vec27"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm27"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape27"
+  type: "Reshape"
+  bottom: "lstm27"
+  top: "lstm27"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm28"
+  type: "Lstm"
+  bottom: "vec28"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm28"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape28"
+  type: "Reshape"
+  bottom: "lstm28"
+  top: "lstm28"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm29"
+  type: "Lstm"
+  bottom: "vec29"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm29"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape29"
+  type: "Reshape"
+  bottom: "lstm29"
+  top: "lstm29"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm30"
+  type: "Lstm"
+  bottom: "vec30"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm30"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape30"
+  type: "Reshape"
+  bottom: "lstm30"
+  top: "lstm30"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+
+layer {
+  name: "lstm31"
+  type: "Lstm"
+  bottom: "vec31"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm31"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape31"
+  type: "Reshape"
+  bottom: "lstm31"
+  top: "lstm31"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm32"
+  type: "Lstm"
+  bottom: "vec32"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm32"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape32"
+  type: "Reshape"
+  bottom: "lstm32"
+  top: "lstm32"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm33"
+  type: "Lstm"
+  bottom: "vec33"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm33"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape33"
+  type: "Reshape"
+  bottom: "lstm33"
+  top: "lstm33"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm34"
+  type: "Lstm"
+  bottom: "vec34"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm34"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape34"
+  type: "Reshape"
+  bottom: "lstm34"
+  top: "lstm34"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm35"
+  type: "Lstm"
+  bottom: "vec35"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm35"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape35"
+  type: "Reshape"
+  bottom: "lstm35"
+  top: "lstm35"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm36"
+  type: "Lstm"
+  bottom: "vec36"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm36"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape36"
+  type: "Reshape"
+  bottom: "lstm36"
+  top: "lstm36"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm37"
+  type: "Lstm"
+  bottom: "vec37"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm37"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape37"
+  type: "Reshape"
+  bottom: "lstm37"
+  top: "lstm37"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm38"
+  type: "Lstm"
+  bottom: "vec38"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm38"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape38"
+  type: "Reshape"
+  bottom: "lstm38"
+  top: "lstm38"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm39"
+  type: "Lstm"
+  bottom: "vec39"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm39"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape39"
+  type: "Reshape"
+  bottom: "lstm39"
+  top: "lstm39"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm40"
+  type: "Lstm"
+  bottom: "vec40"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm40"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape40"
+  type: "Reshape"
+  bottom: "lstm40"
+  top: "lstm40"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+
+layer {
+  name: "lstm41"
+  type: "Lstm"
+  bottom: "vec41"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm41"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape41"
+  type: "Reshape"
+  bottom: "lstm41"
+  top: "lstm41"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm42"
+  type: "Lstm"
+  bottom: "vec42"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm42"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape42"
+  type: "Reshape"
+  bottom: "lstm42"
+  top: "lstm42"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm43"
+  type: "Lstm"
+  bottom: "vec43"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm43"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape43"
+  type: "Reshape"
+  bottom: "lstm43"
+  top: "lstm43"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm44"
+  type: "Lstm"
+  bottom: "vec44"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm44"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape44"
+  type: "Reshape"
+  bottom: "lstm44"
+  top: "lstm44"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm45"
+  type: "Lstm"
+  bottom: "vec45"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm45"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape45"
+  type: "Reshape"
+  bottom: "lstm45"
+  top: "lstm45"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm46"
+  type: "Lstm"
+  bottom: "vec46"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm46"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape46"
+  type: "Reshape"
+  bottom: "lstm46"
+  top: "lstm46"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm47"
+  type: "Lstm"
+  bottom: "vec47"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm47"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape47"
+  type: "Reshape"
+  bottom: "lstm47"
+  top: "lstm47"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+layer {
+  name: "lstm48"
+  type: "Lstm"
+  bottom: "vec48"
+  bottom: "clip"
+  param{
+    lr_mult: 10
+  }
+  top: "lstm48"
+  lstm_param {
+    
+    num_output: 100
+    clipping_threshold: 0.1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer 
+{
+  name: "Reshape48"
+  type: "Reshape"
+  bottom: "lstm48"
+  top: "lstm48"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: 0
+      dim: 1
+    }
+  }
+}
+
+
+layer {
+  #Concat over width
+  name: "concat0"
+  type: "Concat"
+  bottom: "lstm0"
+  bottom: "lstm1"
+  bottom: "lstm2"
+  bottom: "lstm3"
+  bottom: "lstm4"
+  bottom: "lstm5"
+  bottom: "lstm6"
+  
+  top: "outW0"
+ 
+  concat_param {
+    axis: 2
+  }
+}
+
+
+layer {
+  #Concat over width
+  name: "concat1"
+  type: "Concat"
+  bottom: "lstm7"
+  bottom: "lstm8"
+  bottom: "lstm9"
+  bottom: "lstm10"
+  bottom: "lstm11"
+  bottom: "lstm12"
+  bottom: "lstm13"
+  
+  top: "outW1"
+ 
+  concat_param {
+    axis: 2
+  }
+}
+
+layer {
+  #Concat over width
+  name: "concat2"
+  type: "Concat"
+  bottom: "lstm14"
+  bottom: "lstm15"
+  bottom: "lstm16"
+  bottom: "lstm17"
+  bottom: "lstm18"
+  bottom: "lstm19"
+  bottom: "lstm20"
+  top: "outW2"
+ 
+  concat_param {
+    axis: 2
+  }
+}
+
+layer {
+  #Concat over width
+  name: "concat3"
+  type: "Concat"
+  bottom: "lstm21"
+  bottom: "lstm22"
+  bottom: "lstm23"
+  bottom: "lstm24"
+  bottom: "lstm25"
+  bottom: "lstm26"
+  bottom: "lstm27"
+  top: "outW3"
+ 
+  concat_param {
+    axis: 2
+  }
+}
+
+layer {
+  #Concat over width
+  name: "concat4"
+  type: "Concat"
+  bottom: "lstm28"
+  bottom: "lstm29"
+  bottom: "lstm30"
+  bottom: "lstm31"
+  bottom: "lstm32"
+  bottom: "lstm33"
+  bottom: "lstm34"
+  top: "outW4"
+ 
+  concat_param {
+    axis: 2
+  }
+}
+
+layer {
+  #Concat over width
+  name: "concat5"
+  type: "Concat"
+  bottom: "lstm35"
+  bottom: "lstm36"
+  bottom: "lstm37"
+  bottom: "lstm38"
+  bottom: "lstm39"
+  bottom: "lstm40"
+  bottom: "lstm41"
+  top: "outW5"
+ 
+  concat_param {
+    axis: 2
+  }
+}
+
+layer {
+  #Concat over width
+  name: "concat6"
+  type: "Concat"
+  bottom: "lstm42"
+  bottom: "lstm43"
+  bottom: "lstm44"
+  bottom: "lstm45"
+  bottom: "lstm46"
+  bottom: "lstm47"
+  bottom: "lstm48"
+  top: "outW6"
+ 
+  concat_param {
+    axis: 2
+  }
+}
+
+
+layer {
+  #Concat over height
+  name: "concatH"
+  type: "Concat"
+  bottom: "outW0"
+  bottom: "outW1"
+  bottom: "outW2"
+  bottom: "outW3"
+  bottom: "outW4"
+  bottom: "outW5"
+  bottom: "outW6"
+
+  top: "outHW"
+ 
+  concat_param {
+    axis: 2
+  }
+}
+
+layer 
+{
+  name: "ReshapeCube"
+  type: "Reshape"
+  bottom: "outHW"
+  top: "Cubed"
+  reshape_param
+  {
+    shape
+    {
+      dim: 0
+      dim: -1
+      dim: 7
+      dim: 7
+    }
+  }
+}
+
+
+#---------------
+
+layer {
+  name: "newscore-fr-LSTM"
+  type: "Convolution"
+  bottom: "Cubed"
+  top: "score-fc7"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    num_output: 12
+    kernel_size: 1
+    engine: CAFFE
+  }
+}
+layer {
+  name: "newupsample"
+  type: "Deconvolution"
+  bottom: "score-fc7"
+  top: "bigscore"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  convolution_param {
+    num_output: 12
+    kernel_size: 208
+    group: 1
+    stride: 32
+
+    pad: 0
+    #weight_filler: { type: "bilinear_upsampling" } 
+    #bias_term: false
+   
+  }
+}
+#layer {
+  #name: "crop"
+  #type: "Crop"
+  #bottom: "bigscore"
+  #bottom: "data"
+ # top: "score"
+#}
+layer {
+  name: "prob"
+  type: "SoftmaxWithLoss"
+  #bottom: "score"
+  bottom: "bigscore"
+  bottom: "label"
+  top: "loss"
+  loss_param {
+    ignore_label: 255
+    normalize: true
+    # normalize: false
+  }
+}

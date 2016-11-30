@@ -1,0 +1,23 @@
+train_net: "FCN_VGG_LSTM.prototxt"
+
+#test_net: "val.prototxt"
+
+#test_iter: 12
+# make test net, but don't invoke it from the solver itself
+#test_interval: 1000
+display: 1
+average_loss: 20
+lr_policy: "fixed"
+# lr for unnormalized softmax
+#base_lr: 1e-14
+base_lr: 1e-5
+# high momentum
+momentum: 0.99
+# no gradient accumulation
+iter_size: 1
+max_iter: 1000000
+weight_decay: 0.0005
+snapshot: 5000
+snapshot_prefix: "/media/m/26D6578921FFE1C8/snapshot/FCN_VGG/fcn_VGG_LSTM_iter"
+test_initialization: false
+

@@ -1,0 +1,18 @@
+net: "FCN_Alex_LSTM.prototxt"
+test_iter: 12
+test_interval: 1000 # py solving tests
+display: 1
+average_loss: 20
+lr_policy: "fixed"
+base_lr: 1e-5
+momentum: 0.99
+iter_size: 20
+# base_lr: 1e-9
+# momentum: 0.99
+# iter_size: 1
+max_iter: 80000
+weight_decay: 0.0005
+snapshot: 200
+snapshot_prefix: "/media/m/26D6578921FFE1C8/snapshot/fcn_lstm"
+test_initialization: true
+solver_mode: GPU
